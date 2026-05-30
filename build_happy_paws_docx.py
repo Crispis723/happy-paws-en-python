@@ -42,7 +42,6 @@ def format_text_run(paragraph, text):
             run = paragraph.add_run(part[2:-2])
             run.bold = True
         else:
-            # inline emphasis from simple markdown lists is ignored
             run = paragraph.add_run(part)
         run.font.name = 'Arial'
         run.font.size = Pt(11)

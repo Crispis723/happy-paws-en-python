@@ -26,6 +26,8 @@
 ## 1. RESUMEN EJECUTIVO
 Happy Paws es una plataforma SaaS multiempresa para bienestar animal en Colombia. Conecta dueños de mascotas, veterinarias, refugios y entidades de bienestar animal en un solo ecosistema digital orientado a citas, historiales, adopciones, reportes ciudadanos y control administrativo.
 
+Modelo comercial: este proyecto se comercializará bajo un esquema SaaS por suscripción mensual. Se mantiene la opción de un cargo inicial de implementación (costo de desarrollo del MVP) y, adicionalmente, se ofrecerán planes de suscripción mensual para acceso a la plataforma, soporte y servicios gestionados.
+
 | Elemento | Valor / alcance | Observación |
 |---|---|---|
 | Mercado objetivo inicial | Bogotá, Medellín e Ibagué | Entrada comercial por ciudades con alta densidad de mascotas |
@@ -111,6 +113,28 @@ Los costos originales estaban subestimados porque no reflejaban tarifas reales d
 Los precios presentados no incluyen IVA (19%) u otros impuestos aplicables según la legislación colombiana vigente. En caso de aplicar, serán liquidados adicionalmente.
 
 Si el cliente exige Oracle como gestor de base de datos, debe añadirse una bolsa adicional estimada de COP 1.200.000 para el primer mes del MVP, considerando el servicio administrado, soporte y operación básica.
+
+### 4.4 Modelo de suscripción (SaaS)
+
+Se propone el siguiente esquema comercial por suscripción mensual, independiente del cargo inicial de implementación (costo de desarrollo MVP = COP 18.860.000):
+
+| Plan | Precio mensual (COP) | Incluye |
+|---|---:|---|
+| Básico | COP 79.000 | Acceso a funcionalidades principales, soporte por ticket (SLA 72h) |
+| Estándar | COP 199.000 | Incluye Básico + SLA 48h, 1 hora/mes de soporte operativo, backups gestionados |
+| Empresarial | COP 299.000 | Incluye Estándar + SLA 24h, soporte dedicado, integración con Oracle (si aplica) |
+
+Facturación y condiciones:
+
+- Facturación mensual por domiciliación o factura electrónica. Los precios no incluyen IVA (19%).
+- Descuento por pago anual anticipado: 10% sobre la tarifa anual.
+- Periodo de prueba: opcional 14 días sin cargo, sujeto a condiciones comerciales.
+- Cancelación: el cliente puede cancelar la suscripción con un preaviso de 30 días; los datos se conservarán 30 días adicionales para exportación antes de eliminación (salvo que exista obligación legal de retención).
+
+Opciones de financiación de implementación:
+
+- Cargo inicial completo: COP 18.860.000 (pago único antes del despliegue en producción).
+- Opción de financiación: el cargo inicial puede ser financiado en 6 cuotas mensuales sin interés, abonadas junto con la suscripción mensual (sujeto a acuerdo comercial y garantía).
 
 ## 5. CRONOGRAMA CON FECHAS REALES
 
@@ -324,10 +348,33 @@ Happy Paws queda consolidado como una propuesta viable para digitalizar el secto
 **Aviso de privacidad.** Responsable del tratamiento: Happy Paws SAS o la persona jurídica que opere la plataforma para la veterinaria aliada. Finalidades: gestionar usuarios, mascotas, citas, adopciones, reportes, comunicaciones operativas, soporte, seguridad, analítica y cumplimiento legal. Datos recolectados: nombre, cédula o documento, correo, teléfono, dirección, datos de mascotas, historial clínico y registros asociados al uso del sistema. Derechos: consultar, actualizar, rectificar, suprimir, revocar la autorización y presentar quejas ante la autoridad competente. Canal de contacto: soporte@happypaws.co o el correo oficial que defina el responsable. El registro y uso de la plataforma implica aceptación de este tratamiento de datos conforme a la ley vigente. Plazo de conservación: mientras subsista la relación contractual y durante el tiempo exigido por la normatividad aplicable. El titular podrá ejercer sus derechos por los canales oficiales habilitados.
 
 ### A3. CONTRATO DE SUSCRIPCIÓN
-**Contrato de Suscripción.** Cláusula 1. Objeto: el presente contrato regula el uso de la plataforma Happy Paws para la gestión de pacientes, citas, adopciones y reportes. Cláusula 2. Alcance del servicio: el proveedor habilita los módulos contratados, soporte funcional básico, actualizaciones menores y acompañamiento de puesta en marcha. Cláusula 3. Obligaciones del cliente: custodiar credenciales, garantizar el uso lícito del sistema y obtener las autorizaciones necesarias para tratar datos personales. Cláusula 4. Obligaciones del proveedor: mantener medidas razonables de disponibilidad, seguridad, respaldo y atención de incidentes. Cláusula 5. Terminación: cualquiera de las partes podrá terminar el contrato por incumplimiento, vencimiento o decisión mutua, preservando la trazabilidad y la información exigida por ley. Cláusula 6. Confidencialidad: las partes se obligan a no divulgar información técnica, comercial o personal a la que accedan por razón del servicio. Cláusula 7. Tratamiento de datos: el cliente autoriza el tratamiento de datos personales conforme a la Ley 1581 de 2012 y normas relacionadas. Cláusula 8. Responsabilidad: el proveedor no responderá por usos indebidos del sistema fuera del alcance contratado. Cláusula 9. Soporte: los canales y tiempos de respuesta se definirán en la orden de servicio o anexo comercial. Cláusula 10. Ley aplicable: este contrato se rige por la legislación colombiana.
+**Contrato de Suscripción.**
+
+Cláusula 1. Objeto: el presente contrato regula la suscripción y el acceso a la plataforma Happy Paws, sus módulos y servicios asociados.
+
+Cláusula 2. Duración y renovación: la suscripción tiene duración mensual y se renueva automáticamente por periodos iguales salvo aviso de cancelación con 30 días de antelación. La renovación anual con pago anticipado podrá aplicar el descuento indicado comercialmente.
+
+Cláusula 3. Facturación y pago: el cliente autoriza la facturación mensual por los importes pactados. Los pagos deben realizarse mediante domiciliación, transferencia o factura electrónica según acuerdo. Los precios no incluyen IVA (19%). En caso de mora, el proveedor podrá suspender el servicio tras 15 días de impago y aplicar intereses conforme a la normativa aplicable.
+
+Cláusula 4. Cargo de implementación: el cliente pagará el cargo inicial de implementación (si aplica) por el monto acordado (ej. COP 18.860.000) o la opción de financiación pactada en el anexo comercial.
+
+Cláusula 5. Niveles de servicio (SLA) y soporte: los niveles de servicio y tiempos de respuesta se detallan por plan (Básico/Estándar/Empresarial). El proveedor se compromete a esfuerzos razonables para mantener la disponibilidad; los créditos de servicio se regirán por el anexo SLA.
+
+Cláusula 6. Suspensión y terminación por impago: el proveedor podrá suspender el acceso por impago con 15 días de notificación. La terminación por incumplimiento permitirá la conservación de datos por 30 días para exportación antes de su eliminación definitiva.
+
+Cláusula 7. Protección de datos y confidencialidad: las partes se obligan a cumplir la Ley 1581 de 2012 y a mantener medidas de seguridad apropiadas. El proveedor actuará como encargado o responsable según corresponda y facilitará mecanismos para atender derechos de los titulares.
+
+Cláusula 8. Responsabilidad y limitaciones: la responsabilidad del proveedor se limitará a lo acordado en el anexo comercial, excluyendo daños indirectos salvo disposición legal en contrario.
+
+Cláusula 9. Cancelación y reembolso: las políticas de reembolso se definen en el anexo comercial; pagos mensuales consumidos no serán reembolsables salvo error comprobado o acuerdo diferente.
+
+Cláusula 10. Datos al terminar la relación: tras la terminación, el proveedor conservará los datos del cliente por 30 días para permitir la exportación. Transcurrido ese término, los datos podrán eliminarse salvo obligación legal de conservación.
+
+Cláusula 11. Ley aplicable: este contrato se rige por la legislación colombiana.
 
 ### A1. SUPUESTOS FINANCIEROS
 Costo base de recursos humanos = COP 16.100.000; contingencia = COP 2.460.000; costo total = COP 18.860.000; precio sugerido = COP 24.518.000.
+Suscripción estimada (referencia comercial): Básico COP 79.000/mes; Estándar COP 199.000/mes; Empresarial COP 299.000/mes. El cargo inicial de implementación (COP 18.860.000) puede financiarse o cobrarse por separado según acuerdo.
 
 ### A4. BACKLOG RESUMIDO
 Autenticación, mascotas, citas, adopciones, reportes, panel administrativo, auditoría, seguridad y despliegue.
