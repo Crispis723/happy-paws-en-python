@@ -2,10 +2,17 @@ from docx import Document
 from docx.shared import Pt, Inches
 from docx.enum.text import WD_ALIGN_PARAGRAPH
 
-OUTPUT_FILE = 'HappyPaws_V3_0_Corregida_y_Ejecutable.docx'
+OUTPUT_FILE = 'HappyPaws_V3_1_Definitiva_Corregida.docx'
 UPDATE_DATE = '30 de mayo de 2026'
 PROJECT_START = '15 de junio de 2026'
 FINAL_DELIVERY = '16 de agosto de 2026'
+BASE_COST = 16400000
+CONTINGENCY = 2460000
+TOTAL_COST = 18860000
+SALE_PRICE = 24518000
+ORACLE_EXTRA = 1200000
+TOTAL_WITH_ORACLE = 20060000
+SALE_WITH_ORACLE = 26078000
 
 
 def format_cop(value):
@@ -16,7 +23,7 @@ def add_header(section):
     header = section.header
     paragraph = header.paragraphs[0]
     paragraph.alignment = WD_ALIGN_PARAGRAPH.RIGHT
-    paragraph.text = f'Happy Paws | Versión 3.0 | Actualizado: {UPDATE_DATE}'
+    paragraph.text = f'Happy Paws | Versión 3.1 | Actualizado: {UPDATE_DATE}'
     for run in paragraph.runs:
         run.font.name = 'Arial'
         run.font.size = Pt(9)
@@ -39,14 +46,25 @@ def set_document_style(doc):
         add_header(section)
 
 
+def add_title(doc, text, size=18):
+    paragraph = doc.add_paragraph()
+    paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
+    run = paragraph.add_run(text)
+    run.bold = True
+    run.font.name = 'Arial'
+    run.font.size = Pt(size)
+    return paragraph
+
+
 def add_heading(doc, text, level=1):
     paragraph = doc.add_paragraph()
     paragraph.style = f'Heading {level}'
     paragraph.alignment = WD_ALIGN_PARAGRAPH.LEFT
     run = paragraph.add_run(text)
     run.bold = True
+    run.italic = True if level >= 2 else False
     run.font.name = 'Arial'
-    run.font.size = Pt(14)
+    run.font.size = Pt(14 if level == 1 else 12)
     return paragraph
 
 
@@ -99,32 +117,38 @@ def add_table(doc, headers, rows):
     return table
 
 
+def add_pipe_block(doc, headers, rows):
+    separator = '| ' + ' | '.join(['---'] * len(headers)) + ' |'
+    add_paragraph(doc, '| ' + ' | '.join(headers) + ' |')
+    add_paragraph(doc, separator)
+    for row in rows:
+        add_paragraph(doc, '| ' + ' | '.join(str(item) for item in row) + ' |')
+
+
 def add_note(doc, text):
     paragraph = doc.add_paragraph()
-    run = paragraph.add_run(f'Nota al pie / Aclaración: {text}')
+    run = paragraph.add_run(f'Nota: {text}')
     run.italic = True
     run.font.name = 'Arial'
     run.font.size = Pt(10)
     return paragraph
 
 
+def section_title(doc, number, title):
+    add_heading(doc, f'{number}. {title.upper()}', 1)
+
+
+def subsection_title(doc, number, title):
+    add_heading(doc, f'{number} {title}', 2)
+
+
 doc = Document()
 set_document_style(doc)
 
 # Portada
-cover = doc.add_paragraph()
-cover.alignment = WD_ALIGN_PARAGRAPH.CENTER
-run = cover.add_run('HAPPY PAWS\nVERSIÓN 3.0 - CORREGIDA Y EJECUTABLE')
-run.bold = True
-run.font.name = 'Arial'
-run.font.size = Pt(20)
-
-subtitle = doc.add_paragraph()
-subtitle.alignment = WD_ALIGN_PARAGRAPH.CENTER
-subrun = subtitle.add_run('Documento formal de proyecto TI, costos corregidos, cronograma realista, seguridad, legalidad colombiana y alcance ejecutivo')
-subrun.font.name = 'Arial'
-subrun.font.size = Pt(12)
-
+add_title(doc, 'HAPPY PAWS')
+add_title(doc, 'VERSIÓN 3.1 - DEFINITIVA CORREGIDA', 16)
+add_paragraph(doc, 'Documento formal, ejecutivo, legal y ejecutable listo para copiar a Word.')
 for line in [
     f'Fecha de actualización: {UPDATE_DATE}',
     'Cliente: Veterinaria V+Kotiando',
@@ -134,39 +158,32 @@ for line in [
     p = doc.add_paragraph()
     p.alignment = WD_ALIGN_PARAGRAPH.CENTER
     p.add_run(line)
-
-p = doc.add_paragraph()
-p.alignment = WD_ALIGN_PARAGRAPH.CENTER
-p.add_run('Documento listo para copiar a Word y presentar como propuesta ejecutiva y legal.')
-
 doc.add_page_break()
 
 # Índice
-add_heading(doc, '1. ÍNDICE GENERAL', 1)
-index_items = [
-    '1. Índice General',
-    '2. Resumen Ejecutivo',
-    '3. Módulos Obligatorios del MVP',
-    '4. Stack Tecnológico y Arquitectura',
-    '5. Costos Corregidos del Proyecto',
-    '6. Cronograma con Fechas Reales',
-    '7. Aspectos Legales Colombianos',
-    '8. Seguridad Adicional y Cumplimiento Técnico',
-    '9. Story Points y Capacidad Realista',
-    '10. Endpoints REST y Códigos de Error',
-    '11. Análisis de Competencia',
-    '12. Análisis de Riesgos Legales y Técnicos',
-    '13. Definición de Done Mejorada',
-    '14. Qué No Incluir en el MVP',
-    '15. Conclusión y Nota Final',
-    '16. Anexos'
-]
-for item in index_items:
+section_title(doc, 1, 'Índice general')
+for item in [
+    'Resumen ejecutivo',
+    'Módulos obligatorios del MVP',
+    'Stack tecnológico y arquitectura',
+    'Costos corregidos del proyecto',
+    'Cronograma con fechas reales',
+    'Aspectos legales colombianos',
+    'Seguridad adicional y cumplimiento técnico',
+    'Story points realistas',
+    'Endpoints REST y códigos de error',
+    'Análisis de competencia',
+    'Análisis de riesgos legales y técnicos',
+    'Definición de Done mejorada',
+    'Qué no incluir en el MVP',
+    'Conclusión y nota final',
+    'Anexos'
+]:
     add_numbered(doc, item)
-add_note(doc, 'El índice puede actualizarse automáticamente en Word si se aplican estilos de título y numeración final.')
+add_note(doc, 'En Word, este índice puede actualizarse con estilos de título si se desea tabla de contenido automática.')
 
 # Resumen ejecutivo
-add_heading(doc, '2. RESUMEN EJECUTIVO', 1)
+section_title(doc, 2, 'Resumen ejecutivo')
 add_paragraph(doc, 'Happy Paws es una plataforma SaaS multiempresa para bienestar animal en Colombia. Conecta dueños de mascotas, veterinarias, refugios y entidades de bienestar animal en un solo ecosistema digital orientado a citas, historiales, adopciones, reportes ciudadanos y control administrativo.')
 add_label_value(doc, 'Misión', 'Digitalizar la gestión veterinaria y la protección animal con una solución confiable, trazable y accesible para Colombia.')
 add_label_value(doc, 'Visión', 'Ser la plataforma de referencia en Latinoamérica para la gestión integral del bienestar animal.')
@@ -174,13 +191,18 @@ add_label_value(doc, 'Propuesta de valor', 'Una sola plataforma para gestionar m
 add_table(doc, ['Elemento', 'Valor / alcance', 'Observación'], [
     ['Mercado objetivo inicial', 'Bogotá, Medellín e Ibagué', 'Entrada comercial por ciudades con alta densidad de mascotas'],
     ['Enfoque de negocio', 'SaaS B2B + componente social B2C', 'Vets y refugios como clientes principales'],
-    ['Inversión requerida', format_cop(18882500), 'Costo total MVP corregido'],
-    ['Precio sugerido al cliente', format_cop(24547250), 'Margen comercial de 30%']
+    ['Inversión requerida', format_cop(TOTAL_COST), 'Costo total MVP corregido'],
+    ['Precio sugerido al cliente', format_cop(SALE_PRICE), 'Margen comercial de 30%']
 ])
-add_note(doc, 'Los valores financieros se expresan en COP con redondeo sin decimales para facilitar lectura ejecutiva.')
+add_pipe_block(doc, ['Elemento', 'Valor / alcance', 'Observación'], [
+    ['Mercado objetivo inicial', 'Bogotá, Medellín e Ibagué', 'Entrada comercial por ciudades con alta densidad de mascotas'],
+    ['Enfoque de negocio', 'SaaS B2B + componente social B2C', 'Vets y refugios como clientes principales'],
+    ['Inversión requerida', format_cop(TOTAL_COST), 'Costo total MVP corregido'],
+    ['Precio sugerido al cliente', format_cop(SALE_PRICE), 'Margen comercial de 30%']
+])
 
-# Módulos MVP
-add_heading(doc, '3. MÓDULOS OBLIGATORIOS DEL MVP', 1)
+# MVP
+section_title(doc, 3, 'Módulos obligatorios del MVP')
 add_table(doc, ['Módulo', 'Incluye', 'Resultado esperado'], [
     ['Registro e inicio de sesión', 'JWT + roles: Administrador, Veterinaria, Propietario, Refugio', 'Acceso seguro y segmentado'],
     ['CRUD de mascotas', 'Nombre, raza, edad, peso, foto, vacunas', 'Ficha unificada por mascota'],
@@ -190,12 +212,29 @@ add_table(doc, ['Módulo', 'Incluye', 'Resultado esperado'], [
     ['Reportes ciudadanos', 'Maltrato o abandono con geolocalización y seguimiento', 'Canal de protección animal'],
     ['Panel administrativo', 'Métricas, usuarios, moderación', 'Control del ecosistema']
 ])
-add_note(doc, 'El MVP excluye funciones de alta complejidad que no son necesarias para validar el mercado inicial.')
+add_pipe_block(doc, ['Módulo', 'Incluye', 'Resultado esperado'], [
+    ['Registro e inicio de sesión', 'JWT + roles: Administrador, Veterinaria, Propietario, Refugio', 'Acceso seguro y segmentado'],
+    ['CRUD de mascotas', 'Nombre, raza, edad, peso, foto, vacunas', 'Ficha unificada por mascota'],
+    ['Agenda de citas', 'Crear, cancelar, reprogramar, notificar', 'Control operativo de agenda'],
+    ['Historial clínico', 'Consultas, diagnósticos, medicamentos, vacunas', 'Trazabilidad de atención médica'],
+    ['Módulo de adopciones', 'Publicar, postular, aprobar, rechazar', 'Flujo digital de adopción'],
+    ['Reportes ciudadanos', 'Maltrato o abandono con geolocalización y seguimiento', 'Canal de protección animal'],
+    ['Panel administrativo', 'Métricas, usuarios, moderación', 'Control del ecosistema']
+])
 
-# Stack y arquitectura
-add_heading(doc, '4. STACK TECNOLÓGICO Y ARQUITECTURA', 1)
+# Stack
+section_title(doc, 4, 'Stack tecnológico y arquitectura')
 add_paragraph(doc, 'La arquitectura recomendada es modular, segura y escalable. Se prioriza desacoplar frontend, backend y almacenamiento de imágenes para facilitar mantenimiento y despliegue.')
 add_table(doc, ['Capa', 'Tecnología', 'Uso'], [
+    ['Frontend', 'React', 'Interfaz web responsiva y mantenible'],
+    ['Backend', 'Spring Boot', 'API REST principal del negocio'],
+    ['Base de datos', 'PostgreSQL (base) / Oracle Database (opcional empresarial)', 'Persistencia relacional y alternativa corporativa'],
+    ['Autenticación', 'JWT + Spring Security', 'Seguridad y control de acceso'],
+    ['Contenedores', 'Docker', 'Portabilidad y despliegue reproducible'],
+    ['Imágenes', 'Cloudinary', 'Gestión de fotos de mascotas y archivos'],
+    ['Despliegue', 'AWS / Railway', 'Publicación y escalamiento inicial']
+])
+add_pipe_block(doc, ['Capa', 'Tecnología', 'Uso'], [
     ['Frontend', 'React', 'Interfaz web responsiva y mantenible'],
     ['Backend', 'Spring Boot', 'API REST principal del negocio'],
     ['Base de datos', 'PostgreSQL (base) / Oracle Database (opcional empresarial)', 'Persistencia relacional y alternativa corporativa'],
@@ -212,11 +251,11 @@ add_table(doc, ['Componente', 'Decisión técnica', 'Motivo'], [
 ])
 add_table(doc, ['Gestor de base de datos', 'Costo estimado', 'Observación'], [
     ['PostgreSQL', format_cop(0), 'Opción recomendada por costo y escalabilidad para el MVP'],
-    ['Oracle Database administrado', format_cop(1200000), 'Alternativa empresarial estimada basada en mercado colombiano 2025-2026']
+    ['Oracle Database administrado', format_cop(ORACLE_EXTRA), 'Alternativa empresarial estimada basada en mercado colombiano 2025-2026']
 ])
 
-# Costos corregidos
-add_heading(doc, '5. COSTOS CORREGIDOS DEL PROYECTO', 1)
+# Costos
+section_title(doc, 5, 'Costos corregidos del proyecto')
 add_paragraph(doc, 'Los costos originales estaban subestimados porque no reflejaban tarifas reales de mercado para Colombia 2025-2026, ni incluían infraestructura mensual, contingencia suficiente, ni el costo real de perfiles junior-mid con experiencia en React, Spring Boot, QA, diseño UX/UI y DevOps.')
 add_table(doc, ['Rol / rubro', 'Horas', 'Tarifa por hora', 'Subtotal'], [
     ['Scrum Master', '60', format_cop(35000), format_cop(2100000)],
@@ -225,7 +264,7 @@ add_table(doc, ['Rol / rubro', 'Horas', 'Tarifa por hora', 'Subtotal'], [
     ['QA / Tester', '50', format_cop(35000), format_cop(1750000)],
     ['Diseñador UX/UI', '70', format_cop(35000), format_cop(2450000)],
     ['DevOps (Docker + despliegue)', '40', format_cop(45000), format_cop(1800000)],
-    ['Total recursos humanos', '420', '-', format_cop(16100000)]
+    ['Total recursos humanos', '420', '-', format_cop(BASE_COST)]
 ])
 add_table(doc, ['Infraestructura primer mes', 'Valor'], [
     ['Servidor cloud (Railway/AWS)', format_cop(120000)],
@@ -237,23 +276,23 @@ add_table(doc, ['Infraestructura primer mes', 'Valor'], [
     ['Total infraestructura mensual', format_cop(300000)]
 ])
 add_table(doc, ['Concepto', 'Valor'], [
-    ['Total recursos humanos', format_cop(16100000)],
+    ['Total recursos humanos', format_cop(BASE_COST)],
     ['Infraestructura primer mes', format_cop(300000)],
-    ['Contingencia 15%', format_cop(2482500)],
-    ['Costo total desarrollo MVP', format_cop(18882500)],
-    ['Precio sugerido al cliente (margen 30%)', format_cop(24547250)]
+    ['Contingencia 15%', format_cop(CONTINGENCY)],
+    ['Costo total desarrollo MVP', format_cop(TOTAL_COST)],
+    ['Precio sugerido al cliente (margen 30%)', format_cop(SALE_PRICE)]
 ])
 add_paragraph(doc, '¿Por qué estaban subestimados los costos originales? Porque se calculaban con supuestos demasiado bajos para perfiles TI en Colombia, no contemplaban infraestructura mensual realista, omitían contingencia suficiente y no reflejaban el costo de cumplir seguridad, despliegue y soporte básico en producción.')
 add_paragraph(doc, 'Si el cliente exige Oracle como gestor de base de datos, debe añadirse una bolsa adicional estimada de COP 1.200.000 para el primer mes del MVP, considerando el servicio administrado, soporte y operación básica.')
 add_table(doc, ['Ajuste por Oracle', 'Valor'], [
-    ['Costo adicional estimado Oracle Database administrado', format_cop(1200000)],
-    ['Nuevo costo total MVP con Oracle', format_cop(20082500)],
-    ['Nuevo precio sugerido al cliente con Oracle (margen 30%)', format_cop(26107250)]
+    ['Costo adicional estimado Oracle Database administrado', format_cop(ORACLE_EXTRA)],
+    ['Nuevo costo total MVP con Oracle', format_cop(TOTAL_WITH_ORACLE)],
+    ['Nuevo precio sugerido al cliente con Oracle (margen 30%)', format_cop(SALE_WITH_ORACLE)]
 ])
-add_note(doc, 'Se usan valores estimados basados en mercado colombiano 2025-2026, como solicitó el cliente.')
+add_note(doc, 'Se usan valores estimados basados en mercado colombiano 2025-2026.')
 
-# Cronograma realista
-add_heading(doc, '6. CRONOGRAMA CON FECHAS REALES', 1)
+# Cronograma
+section_title(doc, 6, 'Cronograma con fechas reales')
 add_paragraph(doc, f'Fecha de inicio del proyecto: {PROJECT_START}. Fecha de entrega final: {FINAL_DELIVERY}. El cronograma se construye con base en la fecha actual y un arranque a una semana, manteniendo cuatro Sprints de dos semanas con cierre y estabilización posterior.')
 add_table(doc, ['Sprint', 'Fechas', 'Objetivo', 'Story Points'], [
     ['Sprint 1', '15/06/2026 - 28/06/2026', 'Base y autenticación', '25 SP'],
@@ -261,14 +300,18 @@ add_table(doc, ['Sprint', 'Fechas', 'Objetivo', 'Story Points'], [
     ['Sprint 3', '13/07/2026 - 26/07/2026', 'Adopciones y reportes', '30 SP'],
     ['Sprint 4', '27/07/2026 - 09/08/2026', 'Panel admin y despliegue', '25 SP']
 ])
+add_pipe_block(doc, ['Sprint', 'Fechas', 'Objetivo', 'Story Points'], [
+    ['Sprint 1', '15/06/2026 - 28/06/2026', 'Base y autenticación', '25 SP'],
+    ['Sprint 2', '29/06/2026 - 12/07/2026', 'Mascotas y citas', '28 SP'],
+    ['Sprint 3', '13/07/2026 - 26/07/2026', 'Adopciones y reportes', '30 SP'],
+    ['Sprint 4', '27/07/2026 - 09/08/2026', 'Panel admin y despliegue', '25 SP']
+])
 add_paragraph(doc, 'La entrega del 16 de agosto de 2026 se reserva como ventana de estabilización, ajustes finales, documentación y cierre contractual.')
-add_note(doc, 'La velocidad total objetivo es 108 SP, con una distribución más realista para un equipo junior-mid.')
 
 # Legal
-add_heading(doc, '7. ASPECTOS LEGALES COLOMBIANOS', 1)
+section_title(doc, 7, 'Aspectos legales colombianos')
 add_paragraph(doc, 'Esta sección corrige una omisión crítica del documento anterior: la plataforma debe operar con cumplimiento legal colombiano desde el diseño, no como ajuste posterior.')
-
-add_heading(doc, '7.1 Ley 1581 de 2012 - Protección de Datos Personales', 2)
+subsection_title(doc, '7.1', 'Ley 1581 de 2012 - Protección de Datos Personales')
 add_paragraph(doc, 'La Ley 1581 de 2012 regula el tratamiento de datos personales en Colombia. Su principio central es el Habeas Data, entendido como el derecho de toda persona a conocer, actualizar, rectificar y suprimir su información cuando sea procedente.')
 add_table(doc, ['Actor', 'Responsabilidad'], [
     ['Responsable del tratamiento', 'Define finalidades, recopila autorizaciones, responde solicitudes y protege la base de datos'],
@@ -281,13 +324,10 @@ add_table(doc, ['Derecho del titular', 'Descripción', 'Plazo de respuesta'], [
     ['Eliminar / suprimir', 'Solicitar supresión cuando proceda legalmente', '10 días hábiles']
 ])
 add_note(doc, 'Si la solicitud no puede resolverse en 10 días hábiles, la organización debe responder dentro del plazo legal aplicable y dejar trazabilidad del caso.')
-
-add_heading(doc, '7.2 Aviso de privacidad obligatorio', 2)
-add_paragraph(doc, 'Aviso de privacidad sugerido para el sistema al registrar usuarios:')
-add_paragraph(doc, 'Responsable del tratamiento: Happy Paws SAS o la persona jurídica que opere la plataforma para la veterinaria aliada. Finalidades: gestionar usuarios, mascotas, citas, adopciones, reportes, comunicaciones operativas, soporte, seguridad, analítica y cumplimiento legal. Datos recolectados: nombre, cédula o documento, correo, teléfono, dirección, datos de mascotas, historial clínico y registros asociados al uso del sistema. Derechos: consultar, actualizar, rectificar, suprimir, revocar la autorización y presentar quejas ante la autoridad competente. Canal de contacto: soporte@happypaws.co o el correo oficial que defina el responsable. El registro y uso de la plataforma implica aceptación de este tratamiento de datos conforme a la ley vigente.')
+subsection_title(doc, '7.2', 'Aviso de privacidad obligatorio')
+add_paragraph(doc, 'AVISO DE PRIVACIDAD. Responsable del tratamiento: Happy Paws SAS o la persona jurídica que opere la plataforma para la veterinaria aliada. Finalidades: gestionar usuarios, mascotas, citas, adopciones, reportes, comunicaciones operativas, soporte, seguridad, analítica y cumplimiento legal. Datos recolectados: nombre, cédula o documento, correo, teléfono, dirección, datos de mascotas, historial clínico y registros asociados al uso del sistema. Derechos: consultar, actualizar, rectificar, suprimir, revocar la autorización y presentar quejas ante la autoridad competente. Canal de contacto: soporte@happypaws.co o el correo oficial que defina el responsable. El registro y uso de la plataforma implica aceptación de este tratamiento de datos conforme a la ley vigente. Plazo de conservación: mientras subsista la relación contractual y durante el tiempo exigido por la normatividad aplicable. El titular podrá ejercer sus derechos por los canales oficiales habilitados.')
 add_note(doc, 'El aviso de privacidad debe mostrarse antes del registro y quedar almacenado como evidencia de aceptación.')
-
-add_heading(doc, '7.3 Ley 1774 de 2016 - Bienestar Animal', 2)
+subsection_title(doc, '7.3', 'Ley 1774 de 2016 - Bienestar Animal')
 add_paragraph(doc, 'La plataforma debe alinearse con la Ley 1774 de 2016, que reconoce a los animales como seres sintientes y refuerza el deber de protección contra el maltrato.')
 add_table(doc, ['Obligación', 'Aplicación en Happy Paws'], [
     ['Reportar maltrato', 'Debe existir un flujo de escalamiento a autoridades competentes'],
@@ -295,31 +335,30 @@ add_table(doc, ['Obligación', 'Aplicación en Happy Paws'], [
     ['Trazabilidad', 'Todo reporte debe conservar fecha, evidencia, ubicación y seguimiento'],
     ['Bienestar animal', 'Los módulos deben promover adopción responsable, atención y cuidado']
 ])
-
-add_heading(doc, '7.4 Contrato de suscripción para veterinarias', 2)
-add_paragraph(doc, 'Cláusulas mínimas recomendadas para el contrato de suscripción:')
+subsection_title(doc, '7.4', 'Contrato de suscripción para veterinarias')
+add_paragraph(doc, 'Contrato de Suscripción - cláusulas mínimas:')
 add_table(doc, ['Cláusula', 'Contenido mínimo'], [
-    ['Objeto', 'Uso de la plataforma Happy Paws para la gestión de pacientes, citas, adopciones y reportes'],
-    ['Alcance del servicio', 'Módulos contratados, soporte incluido y límites de uso'],
-    ['Obligaciones del cliente', 'Usar la plataforma conforme a la ley, custodiar credenciales y autorizar tratamiento de datos'],
-    ['Obligaciones del proveedor', 'Disponibilidad razonable, soporte, seguridad y protección de datos'],
-    ['Terminación', 'Causales de suspensión, cancelación, incumplimiento y tratamiento de información al cierre']
+    ['1. Objeto', 'Uso de la plataforma Happy Paws para la gestión de pacientes, citas, adopciones y reportes'],
+    ['2. Alcance del servicio', 'Módulos contratados, soporte incluido y límites de uso'],
+    ['3. Obligaciones del cliente', 'Usar la plataforma conforme a la ley, custodiar credenciales y autorizar tratamiento de datos'],
+    ['4. Obligaciones del proveedor', 'Disponibilidad razonable, soporte, seguridad y protección de datos'],
+    ['5. Terminación', 'Causales de suspensión, cancelación, incumplimiento y tratamiento de información al cierre'],
+    ['6. Confidencialidad', 'Protección de información del negocio y de los titulares'],
+    ['7. Tratamiento de datos', 'Autorización, finalidades y deberes legales'],
+    ['8. Responsabilidad', 'Limitaciones razonables y canales de soporte']
 ])
-
-add_heading(doc, '7.5 Términos y condiciones generales', 2)
+subsection_title(doc, '7.5', 'Términos y condiciones generales')
 add_paragraph(doc, 'La estructura mínima del sitio web debe incluir: objeto del servicio, aceptación de condiciones, registro y cuenta de usuario, uso permitido, restricciones, propiedad intelectual, confidencialidad, tratamiento de datos, limitación de responsabilidad, suspensión del servicio, reclamaciones y ley aplicable.')
-add_note(doc, 'Los términos y condiciones deben publicarse antes del primer uso funcional del sistema.')
-
-add_heading(doc, '7.6 Registro ante la SIC', 2)
+subsection_title(doc, '7.6', 'Registro ante la SIC')
 add_paragraph(doc, 'Para efectos de este proyecto, el registro ante la SIC y el cumplimiento del Registro Nacional de Bases de Datos debe considerarse obligatorio cuando la base supere 5.000 titulares o cuando la operación crezca a un volumen similar que exija formalización adicional.')
 add_table(doc, ['Aspecto', 'Detalle'], [
     ['Autoridad', 'Superintendencia de Industria y Comercio (SIC)'],
     ['Obligación', 'Inscripción y mantenimiento del registro de bases de datos cuando aplique'],
-    ['Sanción por incumplimiento', 'Hasta 2.000 salarios mínimos legales mensuales vigentes (aprox. COP 2.000.000.000, según SMLMV vigente)']
+    ['Sanción por incumplimiento', 'Hasta 2.000 salarios mínimos legales mensuales vigentes, según la ley aplicable']
 ])
 
-# Seguridad adicional
-add_heading(doc, '8. SEGURIDAD ADICIONAL Y CUMPLIMIENTO TÉCNICO', 1)
+# Seguridad
+section_title(doc, 8, 'Seguridad adicional y cumplimiento técnico')
 add_table(doc, ['Medida', 'Implementación'], [
     ['Rate limiting', 'Máximo 100 peticiones por minuto por IP'],
     ['CORS', 'Solo dominios autorizados y ambientes controlados'],
@@ -336,7 +375,7 @@ add_table(doc, ['Riesgo técnico', 'Controles mínimos'], [
 ])
 
 # Story points
-add_heading(doc, '9. STORY POINTS REALISTAS', 1)
+section_title(doc, 9, 'Story points realistas')
 add_paragraph(doc, 'La estimación anterior de 122 SP en 8 semanas era demasiado ambiciosa para un equipo junior-mid. Se ajusta a una distribución realista de 108 SP y a una velocidad coherente con un equipo pequeño que trabaja en iteraciones cortas.')
 add_table(doc, ['Sprint', 'SP asignados', 'Justificación'], [
     ['Sprint 1', '25 SP', 'Base, autenticación y estructura técnica'],
@@ -345,22 +384,33 @@ add_table(doc, ['Sprint', 'SP asignados', 'Justificación'], [
     ['Sprint 4', '25 SP', 'Panel administrativo, seguridad y despliegue'],
     ['Total', '108 SP', 'Velocidad realista para el plazo y el tamaño del equipo']
 ])
-add_note(doc, 'Velocidad de referencia: 6 a 8 SP por semana por persona, ajustada al rol y a la complejidad de cada historia.')
 
-# Endpoints y errores
-add_heading(doc, '10. ENDPOINTS REST Y CÓDIGOS DE ERROR', 1)
+# Endpoints
+section_title(doc, 10, 'Endpoints REST y códigos de error')
 add_table(doc, ['Método', 'Endpoint', 'Descripción'], [
     ['POST', '/api/v1/auth/register', 'Registro de usuario'],
     ['POST', '/api/v1/auth/login', 'Inicio de sesión'],
+    ['POST', '/api/v1/auth/refresh', 'Refrescar token JWT'],
     ['GET', '/api/v1/pets', 'Listar mascotas'],
     ['POST', '/api/v1/pets', 'Crear mascota'],
-    ['GET', '/api/v1/pets/{id}/history', 'Historial de una mascota'],
+    ['GET', '/api/v1/pets/{id}', 'Detalle de mascota'],
+    ['PUT', '/api/v1/pets/{id}', 'Actualizar mascota'],
+    ['DELETE', '/api/v1/pets/{id}', 'Eliminar mascota'],
+    ['GET', '/api/v1/pets/{id}/history', 'Historial clínico'],
+    ['GET', '/api/v1/vets', 'Listar veterinarias'],
+    ['GET', '/api/v1/appointments', 'Listar citas'],
     ['POST', '/api/v1/appointments', 'Crear cita'],
-    ['PUT', '/api/v1/appointments/{id}/reschedule', 'Reprogramar cita'],
-    ['PUT', '/api/v1/appointments/{id}/cancel', 'Cancelar cita'],
+    ['PATCH', '/api/v1/appointments/{id}/reschedule', 'Reprogramar cita'],
+    ['PATCH', '/api/v1/appointments/{id}/cancel', 'Cancelar cita'],
     ['GET', '/api/v1/adoptions', 'Listar adopciones'],
-    ['POST', '/api/v1/reports', 'Crear reporte ciudadano'],
-    ['GET', '/api/v1/admin/stats', 'Métricas administrativas']
+    ['POST', '/api/v1/adoptions', 'Publicar adopción'],
+    ['POST', '/api/v1/adoptions/{id}/apply', 'Postular a adopción'],
+    ['PATCH', '/api/v1/adoptions/{id}/approve', 'Aprobar postulación'],
+    ['PATCH', '/api/v1/adoptions/{id}/reject', 'Rechazar postulación'],
+    ['GET', '/api/v1/reports', 'Listar reportes'],
+    ['POST', '/api/v1/reports', 'Crear reporte'],
+    ['GET', '/api/v1/admin/stats', 'Métricas admin'],
+    ['GET', '/api/v1/admin/users', 'Gestión de usuarios']
 ])
 add_table(doc, ['Código', 'Significado', 'Ejemplo'], [
     ['200 OK', 'Petición exitosa', 'GET /api/v1/pets'],
@@ -373,27 +423,31 @@ add_table(doc, ['Código', 'Significado', 'Ejemplo'], [
 ])
 
 # Competencia
-add_heading(doc, '11. ANÁLISIS DE COMPETENCIA', 1)
+section_title(doc, 11, 'Análisis de competencia')
 add_paragraph(doc, 'Se agrega una comparación breve con software veterinario conocido en Colombia y la propuesta Happy Paws, para mostrar el espacio competitivo y el diferencial del proyecto.')
 add_table(doc, ['Competidor', 'Precio', 'Ventajas', 'Desventajas'], [
-    ['Vetmanager', '$150k-$300k/mes', 'Establecido, muchas funciones', 'Caro, no tiene adopciones ni reportes ciudadanos'],
-    ['G247', '$120k-$250k/mes', 'Buen soporte', 'Curva de aprendizaje alta'],
-    ['MVZ Cloud', '$80k-$180k/mes', 'Colombiano, económico', 'Poca escalabilidad'],
-    ['Happy Paws', '$79k-$299k/mes', 'Adopciones + reportes + bienestar animal', 'Nuevo en el mercado']
+    ['Vetmanager', 'COP 180.000 - 350.000/mes', 'Establecido, muchas funciones', 'Caro, no tiene adopciones ni reportes ciudadanos'],
+    ['G247', 'COP 150.000 - 280.000/mes', 'Buen soporte', 'Curva de aprendizaje alta'],
+    ['MVZ Cloud', 'COP 70.000 - 150.000/mes', 'Colombiano, económico', 'Poca escalabilidad'],
+    ['VetSys', 'COP 100.000 - 200.000/mes', 'Opción conocida en el mercado', 'Menor foco en bienestar animal'],
+    ['Happy Paws', 'COP 79.000 - 299.000/mes', 'Adopciones + reportes + bienestar animal', 'Nuevo en el mercado']
 ])
 
 # Riesgos
-add_heading(doc, '12. ANÁLISIS DE RIESGOS LEGALES Y TÉCNICOS', 1)
+section_title(doc, 12, 'Análisis de riesgos legales y técnicos')
 add_table(doc, ['Riesgo', 'Probabilidad', 'Impacto', 'Mitigación'], [
     ['Incumplimiento de protección de datos (Ley 1581)', 'Media', 'Alto', 'Incluir aviso de privacidad, obtener consentimiento y firmar contrato de encargo'],
     ['Denuncias por maltrato animal no gestionadas', 'Media', 'Alto', 'Establecer flujo de escalamiento a autoridades'],
     ['Fuga de información de mascotas y dueños', 'Baja', 'Crítico', 'Encriptación, JWT y backups cifrados'],
-    ['Competencia con software establecido', 'Alta', 'Medio', 'Enfoque en adopciones y reportes que nadie tiene']
+    ['Competencia con software establecido', 'Alta', 'Medio', 'Enfoque en adopciones y reportes diferenciales'],
+    ['Retraso en aprobaciones del cliente', 'Alta', 'Medio', 'Definir validaciones por sprint y responsables de aceptación'],
+    ['Rotación del equipo técnico', 'Media', 'Alto', 'Documentación viva, pares de respaldo y backlog priorizado'],
+    ['Dependencia de APIs de terceros', 'Media', 'Medio', 'Fallbacks, contratos de servicio y monitoreo de integraciones'],
+    ['Escalabilidad inesperada', 'Baja', 'Alto', 'Pruebas de carga, colas y capacidad incremental']
 ])
-add_paragraph(doc, 'También deben considerarse riesgos de adopción comercial, soporte operativo, disponibilidad de infraestructura y cambios regulatorios sobre tratamiento de datos o bienestar animal.')
 
 # DoD
-add_heading(doc, '13. DEFINICIÓN DE DONE MEJORADA', 1)
+section_title(doc, 13, 'Definición de done mejorada')
 add_table(doc, ['Criterio', 'Descripción'], [
     ['Código revisado', 'Aprobado por al menos 2 desarrolladores'],
     ['Pruebas funcionales', 'Flujos principales probados sin fallas críticas'],
@@ -404,8 +458,8 @@ add_table(doc, ['Criterio', 'Descripción'], [
 ])
 add_note(doc, 'No se considera terminado un Sprint si existe un bloqueo de seguridad, documentación incompleta o deuda técnica crítica sin plan de cierre.')
 
-# Qué no incluir MVP
-add_heading(doc, '14. QUÉ NO INCLUIR EN EL MVP', 1)
+# No MVP
+section_title(doc, 14, 'Qué no incluir en el MVP')
 add_paragraph(doc, 'Mantener el alcance del MVP es tan importante como construirlo. Se conserva la lista de exclusiones para evitar sobrecosto y desvío funcional.')
 add_table(doc, ['Funcionalidad excluida', 'Razón'], [
     ['Telemedicina', 'Requiere infraestructura costosa y validación clínica adicional'],
@@ -413,10 +467,9 @@ add_table(doc, ['Funcionalidad excluida', 'Razón'], [
     ['Microservicios', 'El MVP debe iniciar como monolito modular'],
     ['Gamificación', 'No es prioritaria para validar el mercado inicial']
 ])
-add_paragraph(doc, 'Enfoque ganador: construir primero una experiencia simple, confiable y con trazabilidad antes de ampliar funciones accesorias.')
 
-# Cierre
-add_heading(doc, '15. CONCLUSIÓN Y NOTA FINAL', 1)
+# Conclusión
+section_title(doc, 15, 'Conclusión y nota final')
 add_paragraph(doc, 'Happy Paws queda consolidado como una propuesta viable para digitalizar el sector veterinario con enfoque social, técnico, comercial y legal. El documento corregido ya incluye costos realistas, cronograma ajustado, legalidad colombiana, seguridad base, competidores y una definición de alcance ejecutable.')
 add_table(doc, ['Siguiente paso', 'Responsable', 'Resultado esperado'], [
     ['Validar alcance final', 'Cliente + equipo', 'Backlog cerrado y priorizado'],
@@ -424,18 +477,31 @@ add_table(doc, ['Siguiente paso', 'Responsable', 'Resultado esperado'], [
     ['Iniciar desarrollo', 'Equipo TI', 'MVP en construcción'],
     ['Abrir piloto', 'Cliente + usuarios', 'Validación con usuarios reales']
 ])
-add_paragraph(doc, 'Documento Happy Paws Versión 3.0 - Aprobado para uso ejecutivo y legal - Generado con correcciones de costos, fechas, cumplimiento Ley 1581/2011 y Ley 1774/2016')
+add_paragraph(doc, 'Documento Happy Paws Versión 3.1 - Definitiva Corregida - Aprobado para uso ejecutivo, legal y comercial.')
 
 # Anexos
-add_heading(doc, '16. ANEXOS', 1)
+section_title(doc, 16, 'Anexos')
 add_table(doc, ['Anexo', 'Contenido'], [
     ['A1', 'Supuestos financieros y fórmula de costos'],
-    ['A2', 'Modelo de aviso de privacidad'],
-    ['A3', 'Borrador de cláusulas contractuales'],
+    ['A2', 'Aviso de privacidad completo'],
+    ['A3', 'Contrato de suscripción completo'],
     ['A4', 'Backlog resumido y criterios de aceptación'],
     ['A5', 'Mapa de arquitectura técnica']
 ])
-add_paragraph(doc, 'Anexo operativo: si el cliente decide formalizar la propuesta, estos apartados pueden convertirse en términos contractuales, anexos de alcance o documentos legales independientes.')
+
+subsection_title(doc, 'A2', 'Aviso de privacidad')
+add_paragraph(doc, 'AVISO DE PRIVACIDAD. Responsable del tratamiento: Happy Paws SAS o la persona jurídica que opere la plataforma para la veterinaria aliada. Finalidades: gestionar usuarios, mascotas, citas, adopciones, reportes, comunicaciones operativas, soporte, seguridad, analítica y cumplimiento legal. Datos recolectados: nombre, cédula o documento, correo, teléfono, dirección, datos de mascotas, historial clínico y registros asociados al uso del sistema. Derechos: consultar, actualizar, rectificar, suprimir, revocar la autorización y presentar quejas ante la autoridad competente. Canal de contacto: soporte@happypaws.co o el correo oficial que defina el responsable. El registro y uso de la plataforma implica aceptación de este tratamiento de datos conforme a la ley vigente. Plazo de conservación: mientras subsista la relación contractual y durante el tiempo exigido por la normatividad aplicable. El titular podrá ejercer sus derechos por los canales oficiales habilitados.')
+
+subsection_title(doc, 'A3', 'Contrato de suscripción')
+add_paragraph(doc, 'CONTRATO DE SUSCRIPCIÓN. Cláusula 1. Objeto: el presente contrato regula el uso de la plataforma Happy Paws para la gestión de pacientes, citas, adopciones y reportes. Cláusula 2. Alcance del servicio: el proveedor habilita los módulos contratados, soporte funcional básico, actualizaciones menores y acompañamiento de puesta en marcha. Cláusula 3. Obligaciones del cliente: custodiar credenciales, garantizar el uso lícito del sistema y obtener las autorizaciones necesarias para tratar datos personales. Cláusula 4. Obligaciones del proveedor: mantener medidas razonables de disponibilidad, seguridad, respaldo y atención de incidentes. Cláusula 5. Terminación: cualquiera de las partes podrá terminar el contrato por incumplimiento, vencimiento o decisión mutua, preservando la trazabilidad y la información exigida por ley. Cláusula 6. Confidencialidad: las partes se obligan a no divulgar información técnica, comercial o personal a la que accedan por razón del servicio. Cláusula 7. Tratamiento de datos: el cliente autoriza el tratamiento de datos personales conforme a la Ley 1581 de 2012 y normas relacionadas. Cláusula 8. Responsabilidad: el proveedor no responderá por usos indebidos del sistema fuera del alcance contratado. Cláusula 9. Soporte: los canales y tiempos de respuesta se definirán en la orden de servicio o anexo comercial. Cláusula 10. Ley aplicable: este contrato se rige por la legislación colombiana.')
+
+add_paragraph(doc, 'A1. Supuestos financieros: costo base de recursos humanos = ' + format_cop(BASE_COST) + '; contingencia = ' + format_cop(CONTINGENCY) + '; costo total = ' + format_cop(TOTAL_COST) + '; precio sugerido = ' + format_cop(SALE_PRICE) + '.')
+
+add_paragraph(doc, 'A4. Backlog resumido: autenticación, mascotas, citas, adopciones, reportes, panel administrativo, auditoría, seguridad y despliegue.')
+add_paragraph(doc, 'A5. Mapa de arquitectura técnica: frontend en React, backend en Spring Boot, base relacional en PostgreSQL, autenticación con JWT, despliegue en Docker y almacenamiento de imágenes en Cloudinary.')
+
+# Cierre final
+add_paragraph(doc, 'La siguiente validación recomendada es revisar el archivo generado en Word para confirmar formato final, tabla de contenido e incorporación visual de los anexos.')
 
 doc.save(OUTPUT_FILE)
 print(f'Generado: {OUTPUT_FILE}')
